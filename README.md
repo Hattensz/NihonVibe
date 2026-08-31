@@ -1,4 +1,4 @@
-# 歌で読む — Leia japonês através da música
+# 日本の雰囲気 - Nihon Vibe
 
 Site estático para aprender a ler hiragana/katakana/kanji sílaba por sílaba, com romanji 
 embaixo, usando letras de música.
