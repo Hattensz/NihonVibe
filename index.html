@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NihonVibe - 日本の雰囲気</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #131b2e;
+    --bg-alt: #1b2740;
+    --paper: #f3ecda;
+    --paper-shadow: #e4dac0;
+    --ink: #22242b;
+    --romaji-muted: #8b7e67;
+    --accent: #b8402a;
+    --accent-soft: rgba(184,64,42,0.14);
+    --indigo: #4a6fa5;
+    --line: rgba(34,36,43,0.14);
+    --radius: 3px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(74,111,165,0.18), transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(184,64,42,0.10), transparent 40%);
+    color: var(--paper);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    min-height: 100vh;
+  }
+
+  a{color:inherit;}
+
+  /* ---------- Header ---------- */
+  header.site-header{
+    padding: 2.4rem 1.5rem 1.6rem;
+    text-align:center;
+    position:relative;
+  }
+  header.site-header h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin:0;
+    letter-spacing: .04em;
+    position:relative;
+    display:inline-block;
+  }
+  header.site-header h1 .underline{
+    display:block;
+    width: 64px;
+    height: 3px;
+    background: var(--accent);
+    margin: 10px auto 0;
+    border-radius: 2px;
+  }
+  header.site-header p{
+    margin: .9rem auto 0;
+    max-width: 46ch;
+    color: rgba(243,236,218,0.65);
+    font-size: .92rem;
+    line-height: 1.6;
+  }
+
+  /* ---------- Layout ---------- */
+  .app{
+    display:grid;
+    grid-template-columns: 270px 1fr;
+    gap: 1.4rem;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+    align-items:start;
+  }
+  @media (max-width: 780px){
+    .app{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--bg-alt);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1.1rem;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar h2{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color: rgba(243,236,218,0.5);
+    margin: 0 0 .7rem;
+    font-weight:600;
+  }
+  .song-list{
+    list-style:none; margin:0; padding:0;
+    display:flex; flex-direction:column; gap:4px;
+    margin-bottom:1.1rem;
+  }
+  .song-list li{
+    display:flex; align-items:center; gap:6px;
+  }
+  .song-list button.song-btn{
+    flex:1;
+    text-align:left;
+    background:transparent;
+    border:none;
+    color: rgba(243,236,218,0.8);
+    padding: .5rem .6rem;
+    border-radius: 6px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:.88rem;
+    transition: background .15s;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .song-list button.song-btn:hover{ background: rgba(255,255,255,0.06); }
+  .song-list li.active button.song-btn{
+    background: var(--accent-soft);
+    color: var(--paper);
+    font-weight:600;
+  }
+  .song-list .del-btn{
+    background:none; border:none; color: rgba(243,236,218,0.35);
+    cursor:pointer; font-size:.9rem; padding:.3rem;
+    border-radius:5px;
+  }
+  .song-list .del-btn:hover{ color: var(--accent); background: rgba(255,255,255,0.06); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    width:100%;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--paper);
+    padding: .6rem .7rem;
+    border-radius: 7px;
+    font-family:inherit;
+    font-size: .85rem;
+    cursor:pointer;
+    margin-bottom: .5rem;
+    transition: border-color .15s, background .15s;
+  }
+  .btn:hover{ border-color: rgba(255,255,255,0.34); background: rgba(255,255,255,0.04); }
+  .btn.primary{
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight:600;
+  }
+  .btn.primary:hover{ background:#a2381f; }
+  .btn.small{ padding:.42rem .6rem; font-size:.78rem; }
+
+  .divider{ height:1px; background: rgba(255,255,255,0.08); margin: 1rem 0; }
+
+  input[type=file]{ display:none; }
+
+  /* ---------- Stage ---------- */
+  .stage-panel{
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 1.6rem 1.6rem 1.8rem;
+    min-height: 420px;
+    position:relative;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.28);
+  }
+  .stage-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    flex-wrap:wrap;
+  }
+  .stage-title-wrap{ flex:1; min-width:200px; }
+  .stage-title{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:1.4rem;
+    margin:0 0 2px;
+  }
+  .stage-sub{
+    font-size:.76rem;
+    color: var(--romaji-muted);
+    letter-spacing:.03em;
+  }
+  .stage-controls{ display:flex; gap:8px; flex-wrap:wrap; }
+  .toggle-btn{
+    border:1px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    padding:.42rem .8rem;
+    border-radius: 20px;
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    font-size:.78rem;
+    cursor:pointer;
+  }
+  .toggle-btn.active{ background: var(--ink); color: var(--paper); }
+  .toggle-btn.edit{ border-color:var(--accent); color:var(--accent); }
+  .toggle-btn.edit.active{ background:var(--accent); color:var(--paper); border-color:var(--accent); }
+
+  .lyric-stage{
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 27px,
+      rgba(34,36,43,0.075) 27px, rgba(34,36,43,0.075) 28px
+    );
+    padding: 1.4rem 0.2rem 0.6rem;
+    min-height: 220px;
+  }
+  .lyric-line{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .lyric-line.spacer{ height: 12px; margin-bottom: 10px; }
+
+  .word-group{
+    display:flex;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 3px;
+  }
+
+  .syllable{
+    display:flex;
+    flex-direction:column;
+    border-right: 1px solid var(--line);
+    min-width: 30px;
+  }
+  .word-group .syllable:last-child{ border-right:none; }
+
+  .syllable .kana{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    font-size:1.5rem;
+    text-align:center;
+    padding: 2px 6px 4px;
+    line-height:1.15;
+  }
+  .syllable .romaji{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    text-align:center;
+    color: var(--romaji-muted);
+    padding: 3px 4px 2px;
+    border-top: 1px dashed var(--line);
+    letter-spacing:.02em;
+    cursor:default;
+    transition: filter .12s, opacity .12s;
+  }
+
+  .lyric-stage.hide-romaji .syllable .romaji{
+    filter: blur(4px);
+    opacity:.55;
+    cursor:pointer;
+  }
+  .lyric-stage.hide-romaji .syllable.revealed .romaji{
+    filter:none;
+    opacity:1;
+  }
+
+  .empty-state{
+    color: rgba(34,36,43,0.5);
+    font-size:.9rem;
+    line-height:1.7;
+    padding: 1rem 0.2rem;
+  }
+  .empty-state code{
+    background: rgba(34,36,43,0.06);
+    padding:1px 5px;
+    border-radius:4px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.82rem;
+  }
+
+  /* ---------- Editor ---------- */
+  .editor{
+    margin-top: 1.2rem;
+    border-top: 1px dashed var(--line);
+    padding-top: 1.1rem;
+  }
+  .editor label{
+    display:block;
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color: var(--romaji-muted);
+    margin-bottom:.35rem;
+  }
+  .editor input[type=text]{
+    width:100%;
+    font-family:'Shippori Mincho', serif;
+    font-size:1.05rem;
+    padding:.5rem .6rem;
+    border:1px solid rgba(34,36,43,0.2);
+    border-radius:6px;
+    margin-bottom:.9rem;
+    background:#fffdf6;
+    color:var(--ink);
+  }
+  .editor textarea{
+    width:100%;
+    min-height: 160px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.86rem;
+    line-height:1.6;
+    padding:.7rem .8rem;
+    border:1px solid rgba(34,36,43,0.2);
+    border-radius:6px;
+    resize:vertical;
+    background:#fffdf6;
+    color:var(--ink);
+  }
+  .editor-actions{
+    display:flex; gap:8px; margin-top:.8rem; flex-wrap:wrap;
+  }
+  .editor-actions .btn{ width:auto; margin-bottom:0; padding:.55rem 1.1rem; }
+  .editor-actions .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .editor-actions .btn.ghost{ border-color: rgba(34,36,43,0.25); color:var(--ink); }
+  .editor-actions .btn.ghost:hover{ background: rgba(34,36,43,0.05); }
+
+  .help-box{
+    margin-top:.9rem;
+    font-size:.78rem;
+    color: var(--romaji-muted);
+    line-height:1.65;
+    background: rgba(34,36,43,0.04);
+    border-radius:6px;
+    padding:.7rem .9rem;
+  }
+  .help-box code{
+    background: rgba(34,36,43,0.08);
+    padding:1px 5px;
+    border-radius:4px;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  footer{
+    text-align:center;
+    padding: 1rem 1.5rem 2.4rem;
+    color: rgba(243,236,218,0.35);
+    font-size:.74rem;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>日本の雰囲気<span class="underline"></span></h1>
+  <p>Aprenda a ler hiragana, katakana e kanji sílaba por sílaba, direto das letras das músicas que você gosta.</p>
+</header>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="panel sidebar">
+    <h2>Suas músicas</h2>
+    <ul class="song-list" id="songList"></ul>
+
+    <button class="btn primary" id="newSongBtn">+ Nova música</button>
+
+    <div class="divider"></div>
+
+    <h2>Arquivos .txt</h2>
+    <button class="btn" id="importBtn">Importar .txt</button>
+    <input type="file" id="fileInput" accept=".txt" multiple>
+    <button class="btn" id="exportCurrentBtn">Exportar música atual</button>
+    <button class="btn" id="exportAllBtn">Exportar todas</button>
+  </aside>
+
+  <!-- STAGE -->
+  <main class="panel stage-panel">
+    <div class="stage-top">
+      <div class="stage-title-wrap">
+        <div class="stage-title" id="stageTitle">—</div>
+        <div class="stage-sub" id="stageSub">nenhuma música selecionada</div>
+      </div>
+      <div class="stage-controls">
+        <button class="toggle-btn" id="romajiToggle">esconder romanji</button>
+        <button class="toggle-btn edit" id="editToggle">editar</button>
+      </div>
+    </div>
+
+    <div class="lyric-stage" id="lyricStage"></div>
+
+    <div class="editor" id="editorBox" style="display:none;">
+      <label for="titleInput">Título da música</label>
+      <input type="text" id="titleInput" placeholder="Ex: 正しさと愚かさと">
+
+      <label for="contentInput">Letra (formato explicado abaixo)</label>
+      <textarea id="contentInput" placeholder="正[tada]-し[shi]-さ[sa] と[to] は[wa]"></textarea>
+
+      <div class="editor-actions">
+        <button class="btn primary" id="saveSongBtn">Salvar</button>
+        <button class="btn ghost" id="cancelEditBtn">Cancelar</button>
+      </div>
+
+      <div class="help-box">
+        <strong>Como escrever:</strong> cada sílaba é <code>escrita[romanji]</code>. Separe sílabas da mesma
+        palavra com hífen <code>-</code> e palavras com espaço. Uma linha em branco cria uma quebra na letra.<br><br>
+        Exemplo: <code>正[tada]-し[shi]-さ[sa] と[to] は[wa]</code> → 正 し さ と は, com "tada shi sa to wa" embaixo.<br><br>
+        Para juntar várias músicas em um único .txt (exportar todas), cada música é separada por uma linha
+        <code>## Título da música</code>.
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<footer>feito para quem quer aprender a ler cantando</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const STORAGE_KEY = "uta_yomu_songs_v1";
+  const CURRENT_KEY = "uta_yomu_current_v1";
+
+  const DEFAULT_SONG = {
+    id: "demo-1",
+    title: "Exemplo — 正しさと愚かさと",
+    content: "正[tada]-し[shi]-さ[sa] と[to] は[wa] 愚[oro]-か[ka]-さ[sa] と[to] は[wa]\n\n" +
+              "紙[kami]-一[ichi]-重[e] な[na] ん[n] だ[da]"
+  };
+
+  let songs = [];
+  let currentId = null;
+  let hideRomaji = false;
+  let editing = false;
+
+  // ---------- Storage ----------
+  function loadSongs(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      songs = raw ? JSON.parse(raw) : [DEFAULT_SONG];
+    }catch(e){ songs = [DEFAULT_SONG]; }
+    if(!songs.length) songs = [DEFAULT_SONG];
+    currentId = localStorage.getItem(CURRENT_KEY) || songs[0].id;
+    if(!songs.find(s => s.id === currentId)) currentId = songs[0].id;
+  }
+  function persist(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(songs));
+    localStorage.setItem(CURRENT_KEY, currentId);
+  }
+  function uid(){ return 's' + Date.now() + Math.random().toString(16).slice(2,7); }
+
+  // ---------- Parsing ----------
+  // syntax: word word  (words separated by spaces)
+  // word: syl-syl-syl  (syllables separated by hyphens)
+  // syl: text[romaji]  -> falls back to using text as romaji if brackets missing
+  function parseLine(line){
+    const words = line.trim().split(/\s+/).filter(Boolean);
+    return words.map(word => {
+      return word.split('-').filter(Boolean).map(syl => {
+        const m = syl.match(/^(.*?)\[(.*?)\]$/);
+        if(m) return { kana: m[1], romaji: m[2] };
+        return { kana: syl, romaji: '' };
+      });
+    });
+  }
+
+  function parseContent(content){
+    const rawLines = content.replace(/\r\n/g, "\n").split("\n");
+    return rawLines.map(line => {
+      if(line.trim() === "") return { type: "spacer" };
+      return { type: "line", words: parseLine(line) };
+    });
+  }
+
+  // ---------- Rendering ----------
+  function getCurrentSong(){
+    return songs.find(s => s.id === currentId) || null;
+  }
+
+  function renderSongList(){
+    const list = document.getElementById('songList');
+    list.innerHTML = '';
+    songs.forEach(song => {
+      const li = document.createElement('li');
+      if(song.id === currentId) li.className = 'active';
+
+      const btn = document.createElement('button');
+      btn.className = 'song-btn';
+      btn.textContent = song.title || '(sem título)';
+      btn.addEventListener('click', () => {
+        currentId = song.id;
+        editing = false;
+        persist();
+        renderAll();
+      });
+
+      const del = document.createElement('button');
+      del.className = 'del-btn';
+      del.title = 'Excluir';
+      del.textContent = '✕';
+      del.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(songs.length <= 1){
+          alert('Mantenha ao menos uma música na biblioteca.');
+          return;
+        }
+        if(!confirm('Excluir "' + song.title + '"?')) return;
+        songs = songs.filter(s => s.id !== song.id);
+        if(currentId === song.id) currentId = songs[0].id;
+        persist();
+        renderAll();
+      });
+
+      li.appendChild(btn);
+      li.appendChild(del);
+      list.appendChild(li);
+    });
+  }
+
+  function renderStage(){
+    const song = getCurrentSong();
+    const stage = document.getElementById('lyricStage');
+    const titleEl = document.getElementById('stageTitle');
+    const subEl = document.getElementById('stageSub');
+    stage.className = 'lyric-stage' + (hideRomaji ? ' hide-romaji' : '');
+    stage.innerHTML = '';
+
+    if(!song){
+      titleEl.textContent = '—';
+      subEl.textContent = 'nenhuma música selecionada';
+      return;
+    }
+
+    titleEl.textContent = song.title || '(sem título)';
+    const parsed = parseContent(song.content || '');
+    const totalSyl = parsed.reduce((acc, l) => l.type === 'line'
+      ? acc + l.words.reduce((a,w)=>a+w.length,0) : acc, 0);
+    subEl.textContent = totalSyl + (totalSyl === 1 ? ' sílaba' : ' sílabas');
+
+    if(!song.content || !song.content.trim()){
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = 'Esta música ainda não tem letra. Clique em <strong>editar</strong> e escreva algo como <code>正[tada]-し[shi]-さ[sa]</code>.';
+      stage.appendChild(empty);
+      return;
+    }
+
+    parsed.forEach(item => {
+      if(item.type === 'spacer'){
+        const sp = document.createElement('div');
+        sp.className = 'lyric-line spacer';
+        stage.appendChild(sp);
+        return;
+      }
+      const lineEl = document.createElement('div');
+      lineEl.className = 'lyric-line';
+
+      item.words.forEach(word => {
+        const wordEl = document.createElement('div');
+        wordEl.className = 'word-group';
+
+        word.forEach(syl => {
+          const sylEl = document.createElement('div');
+          sylEl.className = 'syllable';
+
+          const kanaEl = document.createElement('div');
+          kanaEl.className = 'kana';
+          kanaEl.textContent = syl.kana;
+
+          const romajiEl = document.createElement('div');
+          romajiEl.className = 'romaji';
+          romajiEl.textContent = syl.romaji || '·';
+
+          romajiEl.addEventListener('click', () => {
+            if(!hideRomaji) return;
+            sylEl.classList.toggle('revealed');
+          });
+
+          sylEl.appendChild(kanaEl);
+          sylEl.appendChild(romajiEl);
+          wordEl.appendChild(sylEl);
+        });
+
+        lineEl.appendChild(wordEl);
+      });
+
+      stage.appendChild(lineEl);
+    });
+  }
+
+  function renderEditor(){
+    const box = document.getElementById('editorBox');
+    const song = getCurrentSong();
+    box.style.display = editing ? 'block' : 'none';
+    document.getElementById('editToggle').classList.toggle('active', editing);
+    if(editing && song){
+      document.getElementById('titleInput').value = song.title || '';
+      document.getElementById('contentInput').value = song.content || '';
+    }
+  }
+
+  function renderAll(){
+    renderSongList();
+    renderStage();
+    renderEditor();
+  }
+
+  // ---------- Export helpers ----------
+  function downloadText(filename, text){
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function safeFilename(name){
+    return (name || 'musica').replace(/[\\/:*?"<>|]/g, '').trim() || 'musica';
+  }
+
+  // ---------- Import ----------
+  function importTextFile(filename, text){
+    const marker = /^##\s+(.+)$/;
+    const lines = text.replace(/\r\n/g, "\n").split("\n");
+    const hasMarkers = lines.some(l => marker.test(l.trim()));
+
+    if(!hasMarkers){
+      const title = filename.replace(/\.txt$/i, '');
+      songs.push({ id: uid(), title: title, content: text.trim() });
+      return 1;
+    }
+
+    let count = 0;
+    let curTitle = null;
+    let buffer = [];
+    function flush(){
+      if(curTitle !== null){
+        songs.push({ id: uid(), title: curTitle, content: buffer.join('\n').trim() });
+        count++;
+      }
+      buffer = [];
+    }
+    lines.forEach(line => {
+      const m = line.trim().match(marker);
+      if(m){
+        flush();
+        curTitle = m[1].trim();
+      } else if(curTitle !== null){
+        buffer.push(line);
+      }
+    });
+    flush();
+    return count;
+  }
+
+  // ---------- Events ----------
+  document.getElementById('newSongBtn').addEventListener('click', () => {
+    const song = { id: uid(), title: 'Nova música', content: '' };
+    songs.push(song);
+    currentId = song.id;
+    editing = true;
+    persist();
+    renderAll();
+  });
+
+  document.getElementById('romajiToggle').addEventListener('click', function(){
+    hideRomaji = !hideRomaji;
+    this.classList.toggle('active', hideRomaji);
+    this.textContent = hideRomaji ? 'mostrar romanji' : 'esconder romanji';
+    renderStage();
+  });
+
+  document.getElementById('editToggle').addEventListener('click', () => {
+    editing = !editing;
+    renderEditor();
+  });
+
+  document.getElementById('cancelEditBtn').addEventListener('click', () => {
+    editing = false;
+    renderEditor();
+  });
+
+  document.getElementById('saveSongBtn').addEventListener('click', () => {
+    const song = getCurrentSong();
+    if(!song) return;
+    song.title = document.getElementById('titleInput').value.trim() || 'Sem título';
+    song.content = document.getElementById('contentInput').value;
+    editing = false;
+    persist();
+    renderAll();
+  });
+
+  document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('fileInput').click();
+  });
+
+  document.getElementById('fileInput').addEventListener('change', (e) => {
+    const files = Array.from(e.target.files || []);
+    if(!files.length) return;
+    let pending = files.length;
+    let imported = 0;
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        imported += importTextFile(file.name, String(reader.result));
+        pending--;
+        if(pending === 0){
+          if(imported > 0){
+            currentId = songs[songs.length - 1].id;
+          }
+          persist();
+          renderAll();
+        }
+      };
+      reader.readAsText(file, 'utf-8');
+    });
+    e.target.value = '';
+  });
+
+  document.getElementById('exportCurrentBtn').addEventListener('click', () => {
+    const song = getCurrentSong();
+    if(!song) return;
+    downloadText(safeFilename(song.title) + '.txt', song.content || '');
+  });
+
+  document.getElementById('exportAllBtn').addEventListener('click', () => {
+    const bundle = songs.map(s => '## ' + s.title + '\n\n' + (s.content || '').trim()).join('\n\n');
+    downloadText('biblioteca-musicas.txt', bundle);
+  });
+  // ---------- Init ----------
+  loadSongs();
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
